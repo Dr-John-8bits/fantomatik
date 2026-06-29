@@ -1,0 +1,715 @@
+/* ============================================================================
+   fantomatik. feuille de style.
+   direction a : spectrale / hauntologique (crt, phosphore).
+   règle de rédaction : aucun tiret cadratin dans les commentaires non plus.
+
+   sommaire :
+   1. polices auto-hébergées
+   2. variables (couleurs, type)
+   3. base et reset
+   4. couches de texture (scanlines, grain, vignette, roll bar)
+   5. hero et wordmark
+   6. sections (manifeste, transmission, liens)
+   7. footer
+   8. écran de boot
+   9. interactions (glitch, focus, reveal)
+   10. réduction de mouvement et requêtes média
+   ============================================================================ */
+
+/* 1. polices ---------------------------------------------------------------- */
+
+@font-face {
+  font-family: 'Major Mono Display';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../assets/fonts/major-mono-display-400.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215;
+}
+
+@font-face {
+  font-family: 'Space Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../assets/fonts/space-mono-400.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215;
+}
+
+@font-face {
+  font-family: 'Space Mono';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('../assets/fonts/space-mono-700.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215;
+}
+
+/* 2. variables -------------------------------------------------------------- */
+
+:root {
+  /* couleurs (cahier des charges, section 4.1). palette froide, un seul accent. */
+  --noir: #0A0B0D;
+  --noir-2: #101317;
+  --phosphore: #4DFFB0;
+  --phosphore-glow: rgba(77, 255, 176, 0.45);
+  --brume: #B7C3BD;
+  /* note accessibilite : la valeur du cahier (#6B7771) tombe a 4.22 sur le noir,
+     sous le seuil aa (4.5) pour le petit texte. legere remontee a #7A8881 (5.3),
+     toujours nettement plus discrete que --brume, pour respecter aa partout. */
+  --brume-faible: #7A8881;
+  --ligne: rgba(183, 195, 189, 0.12);
+
+  /* typographie */
+  --mono: 'Space Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  --display: 'Major Mono Display', 'Space Mono', ui-monospace, 'SFMono-Regular',
+    Menlo, Consolas, monospace;
+
+  /* afterglow standard des éléments en phosphore */
+  --glow: 0 0 6px var(--phosphore-glow), 0 0 18px var(--phosphore-glow);
+
+  /* rythme */
+  --mesure: 34rem; /* largeur de colonne étroite et calme */
+}
+
+/* 3. base et reset ---------------------------------------------------------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--noir);
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--noir);
+  color: var(--brume);
+  font-family: var(--mono);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.6;
+  text-transform: lowercase; /* minuscules par défaut, y compris le wordmark */
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+/* les codes alphanumériques restent en capitales (ftk-001) */
+.release-code {
+  text-transform: uppercase;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: var(--phosphore);
+  text-decoration: none;
+}
+
+/* 4. couches de texture ----------------------------------------------------- */
+/* toutes décoratives, jamais interactives, empilées au-dessus du contenu. */
+
+.fx {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 50;
+}
+
+/* scanlines : fines lignes horizontales, opacité très basse. */
+.fx-scanlines {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0) 0,
+    rgba(0, 0, 0, 0) 2px,
+    rgba(0, 0, 0, 0.55) 3px,
+    rgba(0, 0, 0, 0) 4px
+  );
+  opacity: 0.05;
+  mix-blend-mode: multiply;
+}
+
+/* grain de film : turbulence svg en data-uri, statique pour la perf. */
+.fx-grain {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 160px 160px;
+  opacity: 0.045;
+}
+
+/* vignette : assombrissement radial doux des bords. */
+.fx-vignette {
+  background: radial-gradient(
+    ellipse at center,
+    rgba(0, 0, 0, 0) 52%,
+    rgba(0, 0, 0, 0.55) 100%
+  );
+}
+
+/* roll bar crt : bande de luminance qui descend lentement. optionnelle. */
+.fx-rollbar {
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(77, 255, 176, 0.03) 45%,
+    rgba(255, 255, 255, 0.04) 50%,
+    rgba(77, 255, 176, 0.03) 55%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  height: 40vh;
+  inset: auto 0 auto 0;
+  top: -40vh;
+  animation: rollbar 9s linear infinite;
+}
+
+@keyframes rollbar {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(140vh); }
+}
+
+/* 5. hero et wordmark ------------------------------------------------------- */
+
+.hero {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  min-height: 100svh;
+  padding: 8vh clamp(0.75rem, 4vw, 2rem) 6rem;
+  text-align: center;
+  overflow: hidden;
+}
+
+/* la ghost-waveform occupe tout le fond du hero, sous le wordmark. */
+#waveform {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  opacity: 0.62;
+  /* bloom doux global, complète l'afterglow tracé sur le canvas. */
+  filter: drop-shadow(0 0 4px var(--phosphore-glow));
+}
+
+.hero-inner {
+  position: relative;
+  z-index: 2;
+}
+
+.wordmark {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: clamp(2.2rem, 12vw, 9.5rem);
+  line-height: 1;
+  letter-spacing: 0.01em;
+  color: var(--phosphore);
+  text-shadow: var(--glow);
+  will-change: opacity;
+}
+
+.tagline {
+  margin: clamp(1.1rem, 3vw, 2rem) 0 0;
+  font-family: var(--mono);
+  font-size: clamp(0.95rem, 2.6vw, 1.35rem);
+  letter-spacing: 0.12em;
+  color: var(--brume);
+}
+
+.techline {
+  /* une seule ligne sur grand ecran ; repli propre en deux lignes sur telephone. */
+  margin: 1.1rem auto 0;
+  max-width: 90vw;
+  font-size: clamp(0.62rem, 1.6vw, 0.82rem);
+  letter-spacing: 0.1em;
+  color: var(--brume-faible);
+}
+
+@media (min-width: 30rem) {
+  .techline {
+    letter-spacing: 0.18em;
+  }
+}
+
+/* indice de scroll discret, en bas du hero. */
+.scroll-hint {
+  position: absolute;
+  z-index: 2;
+  bottom: 1.6rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--brume-faible);
+  font-size: 0.66rem;
+  letter-spacing: 0.26em;
+}
+
+.scroll-hint:hover,
+.scroll-hint:focus-visible {
+  color: var(--phosphore);
+}
+
+.scroll-hint-arrow {
+  font-size: 0.9rem;
+  animation: bob 2.4s ease-in-out infinite;
+}
+
+@keyframes bob {
+  0%, 100% { transform: translateY(0); opacity: 0.55; }
+  50% { transform: translateY(4px); opacity: 1; }
+}
+
+/* 6. sections --------------------------------------------------------------- */
+
+main {
+  position: relative;
+  z-index: 2;
+}
+
+section {
+  max-width: var(--mesure);
+  margin: 0 auto;
+  padding: clamp(4rem, 12vh, 9rem) 1.5rem;
+  border-top: 1px solid var(--ligne);
+}
+
+.section-titre {
+  margin: 0 0 2rem;
+  font-family: var(--mono);
+  font-weight: 400;
+  font-size: 0.72rem;
+  letter-spacing: 0.34em;
+  color: var(--brume-faible);
+}
+
+/* manifeste : colonne étroite, façon log, beaucoup d'air. */
+.manifeste-corps p {
+  margin: 0 0 1.4rem;
+  font-size: clamp(1rem, 2.5vw, 1.18rem);
+  line-height: 1.85;
+  color: var(--brume);
+}
+
+.manifeste-corps p:last-child {
+  margin-bottom: 0;
+  color: var(--phosphore);
+  text-shadow: var(--glow);
+}
+
+/* transmission / catalogue. */
+.releases {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.release {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: baseline;
+  gap: 1rem;
+  padding: 1.1rem 1.25rem;
+  background: var(--noir-2);
+  border: 1px solid var(--ligne);
+}
+
+.release-code {
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: var(--phosphore);
+  text-shadow: var(--glow);
+}
+
+.release-title {
+  color: var(--brume);
+}
+
+.release-year {
+  color: var(--brume-faible);
+  font-size: 0.82rem;
+  letter-spacing: 0.1em;
+}
+
+.release[data-status="soon"] .release-title {
+  color: var(--brume-faible);
+}
+
+.release-link {
+  grid-column: 1 / -1;
+  margin-top: 0.4rem;
+}
+
+.transmission-note {
+  margin: 1.6rem 0 0;
+  font-size: 0.92rem;
+  color: var(--brume-faible);
+}
+
+.cta-wrap {
+  margin: 2.4rem 0 0;
+}
+
+/* call to action principal vers bandcamp. */
+.cta {
+  display: inline-block;
+  padding: 0.85rem 1.5rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--phosphore);
+  border: 1px solid var(--phosphore);
+  text-shadow: var(--glow);
+  box-shadow: inset 0 0 0 rgba(77, 255, 176, 0), 0 0 0 rgba(77, 255, 176, 0);
+  transition: background-color 0.25s ease, box-shadow 0.25s ease, color 0.25s ease;
+}
+
+.cta:hover,
+.cta:focus-visible {
+  background: var(--phosphore);
+  color: var(--noir);
+  text-shadow: none;
+  box-shadow: 0 0 22px var(--phosphore-glow);
+}
+
+/* liens : liste mono minimale. */
+.liens-liste {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.liens-liste a {
+  font-size: 1.05rem;
+  letter-spacing: 0.08em;
+  text-shadow: var(--glow);
+}
+
+/* en direct. l'affiche, traitee comme un signal capte sur le moniteur. -------- */
+/* couleurs de l'affiche conservees ; on ajoute la couche crt par dessus.        */
+
+.affiche {
+  margin: 0 auto;
+  max-width: clamp(220px, 62vw, 320px); /* reste petite, ne domine pas */
+}
+
+.affiche-cadre {
+  position: relative;
+  overflow: hidden;
+  background: #000;
+  border: 1px solid rgba(77, 255, 176, 0.5);
+  box-shadow: 0 0 24px var(--phosphore-glow), inset 0 0 22px rgba(0, 0, 0, 0.65);
+  border-radius: 2px;
+  line-height: 0;
+}
+
+.affiche-cadre img {
+  display: block;
+  width: 100%;
+  height: auto;
+  /* leger rendu moniteur, couleurs conservees */
+  filter: contrast(1.04) saturate(1.05) brightness(0.98);
+  animation: affiche-flicker 7.5s steps(1) infinite;
+}
+
+/* scanlines locales, un peu plus marquees que la couche globale */
+.affiche-cadre::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0) 0,
+    rgba(0, 0, 0, 0) 2px,
+    rgba(0, 0, 0, 0.4) 3px,
+    rgba(0, 0, 0, 0) 4px
+  );
+  opacity: 0.35;
+  mix-blend-mode: multiply;
+}
+
+/* balayage lumineux lent qui descend, comme un rafraichissement crt */
+.affiche-balayage {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 32%;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    rgba(77, 255, 176, 0) 0%,
+    rgba(77, 255, 176, 0.1) 50%,
+    rgba(255, 255, 255, 0.07) 53%,
+    rgba(77, 255, 176, 0) 100%
+  );
+  mix-blend-mode: screen;
+  transform: translateY(-130%);
+  animation: affiche-sweep 6.5s linear infinite;
+}
+
+@keyframes affiche-sweep {
+  0% { transform: translateY(-130%); }
+  100% { transform: translateY(360%); }
+}
+
+/* vacillement bref et rare du tube */
+@keyframes affiche-flicker {
+  0%, 96%, 100% { opacity: 1; }
+  96.5% { opacity: 0.82; }
+  97% { opacity: 1; }
+  98% { opacity: 0.9; }
+  98.5% { opacity: 1; }
+}
+
+/* glitch chromatique bref au survol */
+.affiche-cadre:hover img {
+  animation: affiche-glitch 0.34s steps(2, end) 1;
+}
+
+@keyframes affiche-glitch {
+  0% { filter: contrast(1.04) saturate(1.05); transform: translate(0, 0); }
+  30% {
+    filter: contrast(1.1) saturate(1.2)
+      drop-shadow(-2px 0 rgba(0, 255, 220, 0.7)) drop-shadow(2px 0 rgba(255, 60, 200, 0.6));
+    transform: translate(1px, -1px);
+  }
+  60% {
+    filter: contrast(1.1) saturate(1.2)
+      drop-shadow(2px 0 rgba(0, 255, 220, 0.7)) drop-shadow(-2px 0 rgba(255, 60, 200, 0.6));
+    transform: translate(-1px, 1px);
+  }
+  100% { filter: contrast(1.04) saturate(1.05); transform: translate(0, 0); }
+}
+
+.affiche-legende {
+  margin: 1.1rem 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  text-align: center;
+}
+
+.affiche-label {
+  font-size: 0.7rem;
+  letter-spacing: 0.28em;
+  color: var(--brume-faible);
+}
+
+.affiche-date {
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--phosphore);
+  text-shadow: var(--glow);
+}
+
+/* 7. footer ----------------------------------------------------------------- */
+
+.pied {
+  position: relative;
+  z-index: 2;
+  padding: 3rem 1.5rem 3.5rem;
+  text-align: center;
+  border-top: 1px solid var(--ligne);
+}
+
+.pied p {
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  color: var(--brume-faible);
+}
+
+/* 8. écran de boot ---------------------------------------------------------- */
+/* caché par défaut ; affiché seulement quand js a posé « boot-pending ». */
+
+#boot {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: var(--noir);
+}
+
+.boot-pending #boot {
+  display: flex;
+}
+
+#boot.is-leaving {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.6s ease;
+}
+
+#boot-log {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: clamp(0.8rem, 3.4vw, 1rem);
+  line-height: 1.9;
+  letter-spacing: 0.04em;
+  color: var(--phosphore);
+  text-shadow: var(--glow);
+  white-space: pre-wrap;
+}
+
+/* curseur clignotant en fin de log. */
+#boot-log::after {
+  content: '\2588';
+  display: inline-block;
+  margin-left: 0.1em;
+  animation: cursor 1s steps(1) infinite;
+}
+
+@keyframes cursor {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+/* 9. interactions ----------------------------------------------------------- */
+
+/* focus clavier visible : anneau phosphore. */
+:focus-visible {
+  outline: 2px solid var(--phosphore);
+  outline-offset: 3px;
+  border-radius: 1px;
+}
+
+/* glitch d'aberration chromatique au survol et au focus (clavier compris).
+   porté par le css pour fonctionner aussi au focus. */
+.wordmark:hover,
+.wordmark:focus-visible,
+a:hover,
+a:focus-visible {
+  animation: glitch 0.32s steps(2, end) 1;
+}
+
+@keyframes glitch {
+  0% {
+    text-shadow: var(--glow);
+    transform: translate(0, 0);
+  }
+  25% {
+    text-shadow: -2px 0 rgba(77, 255, 220, 0.9), 2px 0 rgba(255, 77, 200, 0.7),
+      var(--glow);
+    transform: translate(1px, -1px);
+  }
+  50% {
+    text-shadow: 2px 0 rgba(77, 255, 220, 0.9), -2px 0 rgba(255, 77, 200, 0.7),
+      var(--glow);
+    transform: translate(-1px, 1px);
+  }
+  75% {
+    text-shadow: -1px 0 rgba(77, 255, 220, 0.8), 1px 0 rgba(255, 77, 200, 0.6),
+      var(--glow);
+    transform: translate(1px, 0);
+  }
+  100% {
+    text-shadow: var(--glow);
+    transform: translate(0, 0);
+  }
+}
+
+/* le wordmark est focusable au clavier pour offrir le même glitch ; il reste
+   non interactif (pas de lien). on lui donne donc tabindex via js seulement si
+   souhaité. par défaut, le hover suffit. */
+
+/* reveal au scroll : état initial caché uniquement si js est actif. */
+.js .reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.js .reveal.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* flicker : js ajoute « is-flickering » au wordmark pour un creux d'opacité bref. */
+.wordmark.is-flickering {
+  opacity: 0.35;
+}
+
+/* 10. réduction de mouvement et requêtes média ------------------------------ */
+
+/* tablettes et plus : la release passe sur une seule ligne. */
+@media (min-width: 36rem) {
+  .release-link {
+    grid-column: auto;
+    margin-top: 0;
+    text-align: right;
+  }
+}
+
+/* respect strict de prefers-reduced-motion : site beau et lisible au repos. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  /* on coupe roll bar, bob, curseur, glitch, flicker. */
+  .fx-rollbar,
+  .scroll-hint-arrow,
+  #boot-log::after {
+    animation: none;
+  }
+
+  .scroll-hint-arrow {
+    opacity: 0.8;
+  }
+
+  .wordmark:hover,
+  .wordmark:focus-visible,
+  a:hover,
+  a:focus-visible {
+    animation: none;
+  }
+
+  .wordmark.is-flickering {
+    opacity: 1;
+  }
+
+  /* le contenu apparaît immédiatement, sans décalage animé. */
+  .js .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  /* l'écran de boot n'est jamais affiché (js ne pose pas « boot-pending »,
+     mais on verrouille aussi côté css par sécurité). */
+  .boot-pending #boot {
+    display: none;
+  }
+
+  /* affiche : on fige tout. le cadre crt et les scanlines restent, sans mouvement. */
+  .affiche-cadre img,
+  .affiche-cadre:hover img {
+    animation: none;
+    filter: contrast(1.02) saturate(1.03);
+  }
+
+  .affiche-balayage {
+    display: none;
+  }
+}

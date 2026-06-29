@@ -1,0 +1,8 @@
+# macos
+.DS_Store
+
+# outillage de previsualisation local (claude code), inutile au site
+.claude/
+
+# document de travail interne, a ne pas publier
+cahier_des_charges_fantomatik.md
