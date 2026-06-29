@@ -4,8 +4,6 @@ site vitrine du projet musical **fantomatik**. acid minimal sur machines, basé 
 page d'accueil unique, statique, hauntologique (esthétique crt / phosphore, « le fantôme
 dans la machine »). aucune dépendance, aucun build, aucun tracker, aucun cookie.
 
-> note de rédaction : ce dépôt n'utilise jamais le tiret cadratin. point, virgule,
-> point-virgule ou deux-points selon la grammaire. merci de conserver cette règle.
 
 ## structure des fichiers
 
