@@ -23,6 +23,12 @@
         intervalleMax: 15000,// ms, délai maximal
         montee: 0.8,         // s, temps de montée de la résonance
         chute: 2.4           // s, temps de retombée (le balayage de la 303)
+      },
+      pointeur: {            // réactivité au pointeur (souris ou doigt)
+        force: 0.9,          // amplitude de la bosse sous le pointeur
+        largeur: 0.06,       // largeur de la bosse (fraction de la largeur)
+        lissage: 0.14,       // suivi de la position du pointeur (plus grand = plus vif)
+        reponse: 0.08        // vitesse de montée puis de retombée de la bosse
       }
     },
     boot: {
@@ -45,6 +51,9 @@
   var mqReduce = window.matchMedia('(prefers-reduced-motion: reduce)');
   var reduceMotion = mqReduce.matches;
 
+  /* petit pont entre modules : le wordmark peut réveiller la waveform. */
+  var api = {};
+
   /* ==========================================================================
      1. ghost-waveform
      ========================================================================== */
@@ -63,6 +72,11 @@
     var resNiveau = 0;            // 0..1, enveloppe courante
     var resProchaine = 0;        // timestamp ms du prochain déclenchement
     var resDebut = -1;           // timestamp ms du début de l'événement en cours
+
+    // réactivité au pointeur (la bosse sous la souris ou le doigt).
+    var ptr = cfg.pointeur;
+    var pxCible = 0.5, pxLisse = 0.5;     // position normalisée 0..1
+    var pointeCible = 0, pointeCur = 0;   // amplitude 0..1 de la bosse
 
     function tailleCanvas() {
       var rect = canvas.getBoundingClientRect();
@@ -86,6 +100,12 @@
         var balayage = Math.sin(res * Math.PI); // 0 -> 1 -> 0 sur la durée de l'event
         var freqRes = 6 + balayage * 16;
         y += res * 0.55 * Math.sin(xNorm * freqRes * Math.PI * 2 + phase * 3);
+      }
+
+      // bosse locale sous le pointeur : le doigt sur l'oscilloscope.
+      if (pointeCur > 0.001) {
+        var dp = (xNorm - pxLisse) / ptr.largeur;
+        y += pointeCur * ptr.force * Math.exp(-0.5 * dp * dp);
       }
       return y;
     }
@@ -147,6 +167,9 @@
 
     function boucle(nowMs) {
       majResonance(nowMs);
+      // lissage du suivi de pointeur et de l'amplitude de la bosse.
+      pxLisse += (pxCible - pxLisse) * ptr.lissage;
+      pointeCur += (pointeCible - pointeCur) * ptr.reponse;
       tracer(nowMs / 1000);
       rafId = window.requestAnimationFrame(boucle);
     }
@@ -169,6 +192,31 @@
       tracer(2.2);
     }
 
+    // déclenche une résonance immédiate (utilisé par l'easter egg du wordmark).
+    function forceResonance() {
+      resDebut = (window.performance && performance.now ? performance.now() : 0);
+    }
+
+    // branche la réactivité au pointeur : survol à la souris, glissé au doigt.
+    function brancherPointeur() {
+      var hero = canvas.parentElement || document.querySelector('.hero');
+      if (!hero) return;
+      function suivre(e) {
+        var rect = canvas.getBoundingClientRect();
+        if (!rect.width) return;
+        pxCible = Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width));
+        pointeCible = 1;
+      }
+      function relacher() { pointeCible = 0; }
+      // pointer events : souris, tactile et stylet dans le même code. on ne bloque
+      // jamais le scroll (passive), le doigt qui glisse défile la page normalement.
+      hero.addEventListener('pointermove', suivre, { passive: true });
+      hero.addEventListener('pointerdown', suivre, { passive: true });
+      hero.addEventListener('pointerleave', relacher);
+      hero.addEventListener('pointerup', relacher);
+      hero.addEventListener('pointercancel', relacher);
+    }
+
     function init() {
       tailleCanvas();
       if (reduceMotion) {
@@ -178,7 +226,10 @@
       resProchaine = (window.performance && performance.now ? performance.now() : 0) +
         cfg.resonance.intervalleMin;
       demarrer();
+      brancherPointeur();
     }
+
+    api.resonance = forceResonance;
 
     // redimensionnement, débounce léger.
     var resizeTimer = null;
@@ -374,6 +425,103 @@
       seq.appendChild(frag);
       seq.classList.add('seq--ready');
     });
+  })();
+
+  /* ==========================================================================
+     6. compte a rebours du concert
+     decompte sobre, registre machine, vers la date data-cible de la figure.
+     decoratif (aria-hidden) : la date lisible « 5 XII 2026 · lille » reste la
+     source accessible. sans js, le bloc reste vide, sans rien casser.
+     ========================================================================== */
+  (function compteARebours() {
+    var el = document.querySelector('.compte[data-cible]');
+    if (!el) return;
+    var cible = new Date(el.getAttribute('data-cible')).getTime();
+    if (isNaN(cible)) return;
+
+    // construit la structure une fois : 4 groupes nombre + unite, separes par « : ».
+    var unites = [['j'], ['h'], ['m'], ['s']];
+    var nums = {};
+    unites.forEach(function (u, i) {
+      if (i > 0) {
+        var sep = document.createElement('span');
+        sep.className = 'compte-sep';
+        sep.textContent = ':';
+        el.appendChild(sep);
+      }
+      var grp = document.createElement('span');
+      grp.className = 'compte-grp';
+      var n = document.createElement('span');
+      n.className = 'compte-num';
+      n.textContent = '00';
+      var lab = document.createElement('span');
+      lab.className = 'compte-unite';
+      lab.textContent = u[0];
+      grp.appendChild(n);
+      grp.appendChild(lab);
+      el.appendChild(grp);
+      nums[u[0]] = n;
+    });
+
+    function pad(v, n) {
+      v = String(v);
+      while (v.length < n) v = '0' + v;
+      return v;
+    }
+
+    var timer = null;
+    function tick() {
+      var diff = cible - Date.now();
+      if (diff <= 0) {
+        if (timer) window.clearInterval(timer);
+        el.textContent = 'signal en direct';
+        el.classList.add('compte--live');
+        return;
+      }
+      var j = Math.floor(diff / 86400000);
+      var h = Math.floor((diff % 86400000) / 3600000);
+      var m = Math.floor((diff % 3600000) / 60000);
+      var s = Math.floor((diff % 60000) / 1000);
+      nums.j.textContent = pad(j, j > 99 ? 3 : 2);
+      nums.h.textContent = pad(h, 2);
+      nums.m.textContent = pad(m, 2);
+      nums.s.textContent = pad(s, 2);
+    }
+
+    tick();
+    timer = window.setInterval(tick, 1000);
+  })();
+
+  /* ==========================================================================
+     7. easter egg : le fantome repond quand on touche le wordmark
+     clic ou tap sur « fantomatik » : resonance 303 forcee + rafale de flicker.
+     pur bonus, coupe sous reduced-motion, jamais requis pour comprendre la page.
+     ========================================================================== */
+  (function easterEgg() {
+    if (reduceMotion) return;
+    var wm = document.getElementById('wordmark');
+    if (!wm) return;
+    wm.style.cursor = 'pointer';
+
+    var enCours = false;
+    function reveil() {
+      if (enCours) return;
+      enCours = true;
+      if (api.resonance) api.resonance();
+      var n = 0;
+      (function rafale() {
+        wm.classList.toggle('is-flickering');
+        n++;
+        if (n < 8) {
+          window.setTimeout(rafale, 50 + Math.random() * 45);
+        } else {
+          wm.classList.remove('is-flickering');
+          enCours = false;
+        }
+      })();
+    }
+
+    wm.addEventListener('click', reveil);
   })();
 
 })();

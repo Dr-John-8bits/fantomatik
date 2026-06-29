@@ -626,6 +626,56 @@ section {
   text-shadow: var(--glow);
 }
 
+/* compte a rebours du concert : decompte sobre, registre machine. */
+.compte {
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  gap: 0.55rem;
+  margin-top: 0.9rem;
+  font-size: 0.82rem;
+  letter-spacing: 0.1em;
+  color: var(--brume-faible);
+}
+
+.compte:empty {
+  display: none; /* rien tant que js n a pas rempli le decompte */
+}
+
+.compte-grp {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.18em;
+}
+
+.compte-num {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--phosphore);
+  text-shadow: 0 0 6px var(--phosphore-glow);
+}
+
+.compte-unite {
+  font-size: 0.72em;
+  color: var(--brume-faible);
+}
+
+.compte-sep {
+  color: var(--brume-faible);
+  animation: compte-blink 1s steps(1, end) infinite;
+}
+
+.compte--live {
+  color: var(--phosphore);
+  text-shadow: var(--glow);
+  letter-spacing: 0.22em;
+}
+
+@keyframes compte-blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0.25; }
+}
+
 /* 7. footer ----------------------------------------------------------------- */
 
 .pied {
@@ -835,5 +885,11 @@ a:focus-visible {
     animation: none;
     opacity: 1;
     transform: none;
+  }
+
+  /* compte a rebours : il continue de tourner (info), mais les deux-points
+     ne clignotent pas. */
+  .compte-sep {
+    animation: none;
   }
 }
