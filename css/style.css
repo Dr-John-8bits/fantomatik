@@ -414,8 +414,9 @@ section {
   position: relative;
   overflow: hidden;
   background: #000;
-  border: 1px solid rgba(77, 255, 176, 0.5);
-  box-shadow: 0 0 24px var(--phosphore-glow), inset 0 0 22px rgba(0, 0, 0, 0.65);
+  border: 1px solid rgba(77, 255, 176, 0.7);
+  box-shadow: 0 0 12px var(--phosphore-glow), 0 0 36px var(--phosphore-glow),
+    inset 0 0 32px rgba(0, 0, 0, 0.8);
   border-radius: 2px;
   line-height: 0;
 }
@@ -424,12 +425,14 @@ section {
   display: block;
   width: 100%;
   height: auto;
-  /* leger rendu moniteur, couleurs conservees */
-  filter: contrast(1.04) saturate(1.05) brightness(0.98);
-  animation: affiche-flicker 7.5s steps(1) infinite;
+  /* rendu moniteur appuye : aberration chromatique permanente plus decrochages. */
+  filter: contrast(1.12) saturate(1.2) brightness(0.98)
+    drop-shadow(-1.5px 0 rgba(0, 255, 220, 0.5)) drop-shadow(1.5px 0 rgba(255, 40, 200, 0.45));
+  animation: affiche-aberration 2.4s ease-in-out infinite alternate,
+    affiche-tear 5.5s steps(1, end) infinite;
 }
 
-/* scanlines locales, un peu plus marquees que la couche globale */
+/* scanlines locales, denses, avec une lente derive verticale */
 .affiche-cadre::after {
   content: "";
   position: absolute;
@@ -438,32 +441,38 @@ section {
   background: repeating-linear-gradient(
     to bottom,
     rgba(0, 0, 0, 0) 0,
-    rgba(0, 0, 0, 0) 2px,
-    rgba(0, 0, 0, 0.4) 3px,
-    rgba(0, 0, 0, 0) 4px
+    rgba(0, 0, 0, 0) 1px,
+    rgba(0, 0, 0, 0.55) 2px,
+    rgba(0, 0, 0, 0) 3px
   );
-  opacity: 0.35;
+  opacity: 0.6;
   mix-blend-mode: multiply;
+  animation: affiche-scan-drift 8s linear infinite;
 }
 
-/* balayage lumineux lent qui descend, comme un rafraichissement crt */
+@keyframes affiche-scan-drift {
+  to { background-position: 0 9px; }
+}
+
+/* balayage lumineux vif qui descend, comme un rafraichissement crt rapide */
 .affiche-balayage {
   position: absolute;
   left: 0;
   right: 0;
   top: 0;
-  height: 32%;
+  height: 38%;
   pointer-events: none;
   background: linear-gradient(
     to bottom,
     rgba(77, 255, 176, 0) 0%,
-    rgba(77, 255, 176, 0.1) 50%,
-    rgba(255, 255, 255, 0.07) 53%,
+    rgba(77, 255, 176, 0.22) 46%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(77, 255, 176, 0.22) 54%,
     rgba(77, 255, 176, 0) 100%
   );
   mix-blend-mode: screen;
   transform: translateY(-130%);
-  animation: affiche-sweep 6.5s linear infinite;
+  animation: affiche-sweep 3.6s linear infinite;
 }
 
 @keyframes affiche-sweep {
@@ -471,33 +480,59 @@ section {
   100% { transform: translateY(360%); }
 }
 
-/* vacillement bref et rare du tube */
-@keyframes affiche-flicker {
-  0%, 96%, 100% { opacity: 1; }
-  96.5% { opacity: 0.82; }
-  97% { opacity: 1; }
-  98% { opacity: 0.9; }
-  98.5% { opacity: 1; }
+/* aberration chromatique permanente qui respire, de discrete a marquee */
+@keyframes affiche-aberration {
+  0% {
+    filter: contrast(1.1) saturate(1.16) brightness(0.98)
+      drop-shadow(-1px 0 rgba(0, 255, 220, 0.4)) drop-shadow(1px 0 rgba(255, 40, 200, 0.35));
+  }
+  100% {
+    filter: contrast(1.14) saturate(1.24) brightness(1)
+      drop-shadow(-3px 0 rgba(0, 255, 220, 0.62)) drop-shadow(3px 0 rgba(255, 40, 200, 0.52));
+  }
 }
 
-/* glitch chromatique bref au survol */
+/* decrochages du signal : breves dechirures et sauts, environ toutes les 2 s */
+@keyframes affiche-tear {
+  0%, 11%, 13.5%, 37%, 40%, 69%, 72%, 100% {
+    transform: translate(0, 0);
+    clip-path: inset(0 0 0 0);
+    opacity: 1;
+  }
+  11.5% { transform: translate(-5px, 0); clip-path: inset(18% 0 58% 0); opacity: 0.85; }
+  12.5% { transform: translate(6px, 0); clip-path: inset(52% 0 26% 0); opacity: 1; }
+  37.5% { transform: translate(7px, 0); clip-path: inset(8% 0 76% 0); opacity: 0.8; }
+  39% { transform: translate(-6px, 0); clip-path: inset(68% 0 14% 0); opacity: 1; }
+  69.5% { transform: translate(-7px, 0); clip-path: inset(38% 0 42% 0); opacity: 0.9; }
+  71% { transform: translate(5px, 0); clip-path: inset(4% 0 84% 0); opacity: 1; }
+}
+
+/* survol : glitch franc et continu tant que la souris reste sur l'affiche */
 .affiche-cadre:hover img {
-  animation: affiche-glitch 0.34s steps(2, end) 1;
+  animation: affiche-glitch 0.5s steps(2, end) infinite;
 }
 
 @keyframes affiche-glitch {
-  0% { filter: contrast(1.04) saturate(1.05); transform: translate(0, 0); }
-  30% {
-    filter: contrast(1.1) saturate(1.2)
-      drop-shadow(-2px 0 rgba(0, 255, 220, 0.7)) drop-shadow(2px 0 rgba(255, 60, 200, 0.6));
-    transform: translate(1px, -1px);
+  0% {
+    filter: contrast(1.18) saturate(1.3)
+      drop-shadow(-4px 0 rgba(0, 255, 220, 0.75)) drop-shadow(4px 0 rgba(255, 40, 200, 0.65));
+    transform: translate(-3px, 0);
+    clip-path: inset(0 0 0 0);
   }
-  60% {
-    filter: contrast(1.1) saturate(1.2)
-      drop-shadow(2px 0 rgba(0, 255, 220, 0.7)) drop-shadow(-2px 0 rgba(255, 60, 200, 0.6));
-    transform: translate(-1px, 1px);
+  25% {
+    transform: translate(4px, -1px);
+    clip-path: inset(14% 0 56% 0);
+    filter: contrast(1.24) saturate(1.4)
+      drop-shadow(5px 0 rgba(0, 255, 220, 0.75)) drop-shadow(-5px 0 rgba(255, 40, 200, 0.65));
   }
-  100% { filter: contrast(1.04) saturate(1.05); transform: translate(0, 0); }
+  50% { transform: translate(-4px, 1px); clip-path: inset(60% 0 20% 0); }
+  75% { transform: translate(3px, 0); clip-path: inset(34% 0 40% 0); }
+  100% {
+    filter: contrast(1.18) saturate(1.3)
+      drop-shadow(-4px 0 rgba(0, 255, 220, 0.75)) drop-shadow(4px 0 rgba(255, 40, 200, 0.65));
+    transform: translate(0, 0);
+    clip-path: inset(0 0 0 0);
+  }
 }
 
 .affiche-legende {
@@ -702,11 +737,18 @@ a:focus-visible {
     display: none;
   }
 
-  /* affiche : on fige tout. le cadre crt et les scanlines restent, sans mouvement. */
+  /* affiche : on fige tout. le cadre crt et les scanlines restent, sans mouvement
+     ni aberration ni dechirure. image nette et stable. */
   .affiche-cadre img,
   .affiche-cadre:hover img {
     animation: none;
-    filter: contrast(1.02) saturate(1.03);
+    filter: contrast(1.04) saturate(1.06);
+    clip-path: inset(0 0 0 0);
+    transform: none;
+  }
+
+  .affiche-cadre::after {
+    animation: none;
   }
 
   .affiche-balayage {
