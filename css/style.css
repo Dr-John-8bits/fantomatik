@@ -285,8 +285,63 @@ main {
 section {
   max-width: var(--mesure);
   margin: 0 auto;
-  padding: clamp(4rem, 12vh, 9rem) 1.5rem;
-  border-top: 1px solid var(--ligne);
+  padding: clamp(3rem, 10vh, 7rem) 1.5rem;
+}
+
+/* sequenceurs 16 pas. separateurs de sections, cadence 120 bpm.
+   16 doubles-croches = 1 mesure = 2 s a 120 bpm : la tete de lecture balaye les
+   16 pas en 2 s, un pas toutes les 0,125 s. les pas allumes (.on) dessinent le
+   motif (defini par data-seq dans le html). construit par js ; sans js, une fine
+   ligne reste affichee en repli. chaque section peut avoir un motif different. */
+.seq {
+  --seq-duree: 2s; /* 16 pas a 120 bpm ; baisser la valeur accelere le tempo */
+  position: relative;
+  max-width: 22rem;
+  margin: 0 auto clamp(2.25rem, 6vh, 4rem);
+  border-bottom: 1px solid var(--ligne); /* repli si js indisponible */
+}
+
+.seq.seq--ready {
+  border-bottom: 0;
+  display: grid;
+  grid-template-columns: repeat(16, 1fr);
+  align-items: center;
+  height: 14px;
+}
+
+.seq-step {
+  width: 55%;
+  height: 6px;
+  margin: 0 auto;
+  border-radius: 1px;
+  background: rgba(122, 136, 129, 0.22);
+}
+
+.seq-step.on {
+  width: 62%;
+  height: 8px;
+  background: var(--phosphore);
+  box-shadow: 0 0 5px var(--phosphore-glow);
+}
+
+/* tete de lecture : une cellule de large, balaie les 16 pas en boucle. */
+.seq-head {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: calc(100% / 16);
+  height: 100%;
+  pointer-events: none;
+  border-radius: 2px;
+  background: rgba(77, 255, 176, 0.16);
+  box-shadow: 0 0 8px var(--phosphore-glow);
+  mix-blend-mode: screen;
+  animation: seq-head var(--seq-duree) steps(16, end) infinite;
+}
+
+@keyframes seq-head {
+  from { transform: translateX(0); }
+  to { transform: translateX(1600%); }
 }
 
 .section-titre {
@@ -310,6 +365,21 @@ section {
   margin-bottom: 0;
   color: var(--phosphore);
   text-shadow: var(--glow);
+  /* meme respiration que l'indice « capter le signal » : pulse doux qui flotte. */
+  animation: pulse-signal 2.4s ease-in-out infinite;
+}
+
+@keyframes pulse-signal {
+  0%, 100% {
+    opacity: 0.7;
+    transform: translateY(0);
+    text-shadow: 0 0 6px var(--phosphore-glow);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(3px);
+    text-shadow: var(--glow), 0 0 14px var(--phosphore-glow);
+  }
 }
 
 /* transmission / catalogue. */
@@ -563,7 +633,6 @@ section {
   z-index: 2;
   padding: 3rem 1.5rem 3.5rem;
   text-align: center;
-  border-top: 1px solid var(--ligne);
 }
 
 .pied p {
@@ -753,5 +822,18 @@ a:focus-visible {
 
   .affiche-balayage {
     display: none;
+  }
+
+  /* sequenceurs : motif fige, tete de lecture cachee (pas de balayage). */
+  .seq-head {
+    animation: none;
+    display: none;
+  }
+
+  /* « fantomatik, c'est ça. » : phrase stable, sans pulsation ni flottement. */
+  .manifeste-corps p:last-child {
+    animation: none;
+    opacity: 1;
+    transform: none;
   }
 }

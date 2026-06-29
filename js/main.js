@@ -346,4 +346,34 @@
     cibles.forEach(function (el) { obs.observe(el); });
   })();
 
+  /* ==========================================================================
+     5. sequenceurs 16 pas (separateurs de sections)
+     construit les 16 pas a partir de l'attribut data-seq (16 caracteres 0/1)
+     plus une tete de lecture. l'animation et la cadence (120 bpm) sont gerees
+     en css. sans js, le bloc .seq garde sa fine ligne de repli.
+     ========================================================================== */
+  (function sequenceurs() {
+    var seqs = document.querySelectorAll('.seq[data-seq]');
+    if (!seqs.length) return;
+
+    seqs.forEach(function (seq) {
+      // on ne garde que les 0 et 1, puis on cale sur 16 pas.
+      var motif = (seq.getAttribute('data-seq') || '').replace(/[^01]/g, '');
+      motif = (motif + '0000000000000000').slice(0, 16);
+
+      var frag = document.createDocumentFragment();
+      for (var i = 0; i < 16; i++) {
+        var pas = document.createElement('span');
+        pas.className = motif.charAt(i) === '1' ? 'seq-step on' : 'seq-step';
+        frag.appendChild(pas);
+      }
+      var tete = document.createElement('span');
+      tete.className = 'seq-head';
+      frag.appendChild(tete);
+
+      seq.appendChild(frag);
+      seq.classList.add('seq--ready');
+    });
+  })();
+
 })();
