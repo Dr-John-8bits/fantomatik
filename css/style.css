@@ -274,8 +274,34 @@ a { color: var(--yellow); text-decoration: none; }
   color: var(--yellow);
 }
 
+/* liste des titres de l'ep : numero en rose, titre en blanc casse. */
+.tracklist {
+  list-style: none;
+  margin: 1.5rem 0 0;
+  padding: 0;
+  counter-reset: piste;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.tracklist li {
+  counter-increment: piste;
+  font-family: var(--disp);
+  font-size: clamp(1.3rem, 5.5vw, 2.6rem);
+  line-height: 1.02;
+  text-transform: uppercase;
+  color: var(--cream);
+}
+
+.tracklist li::before {
+  content: counter(piste, decimal-leading-zero);
+  margin-right: 0.4em;
+  color: var(--pink);
+}
+
 .status {
-  margin-top: 1.3rem;
+  margin-top: 1.4rem;
   max-width: 34ch;
   font-weight: 700;
   font-size: clamp(0.82rem, 2.6vw, 1.05rem);
