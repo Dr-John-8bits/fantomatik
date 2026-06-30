@@ -65,10 +65,9 @@
     <rect x="1060" y="590" width="22" height="14" fill="#ECF312"/>
     <rect x="1100" y="590" width="22" height="14" fill="#ECF312"/>
     <rect x="1140" y="590" width="22" height="14" fill="#ECF312"/>
-  <text class="d" x="603" y="368" text-anchor="middle" font-size="220" fill="#ECF312">fantomatik</text>
-  <text class="d" x="600" y="362" text-anchor="middle" font-size="220" fill="#FF2D8E">fantomatik</text>
-  <text class="d" x="603" y="452" text-anchor="middle" font-size="52" fill="#0A0A14">le fantôme dans la machine</text>
-  <text class="d" x="600" y="449" text-anchor="middle" font-size="52" fill="#ECF312">le fantôme dans la machine</text>
-  <rect x="392" y="486" width="416" height="40" fill="#0A0A14"/>
-  <text x="600" y="513" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-weight="700" font-size="20" letter-spacing="4" fill="#FFF4E6">ACID MINIMAL · LILLE · 2026</text>
+  <text class="d" x="596" y="350" text-anchor="middle" font-size="225" fill="rgba(0,200,255,0.45)">fantomatik</text>
+  <text class="d" x="608" y="358" text-anchor="middle" font-size="225" fill="#ECF312">fantomatik</text>
+  <text class="d" x="600" y="352" text-anchor="middle" font-size="225" fill="#FF2D8E">fantomatik</text>
+  <rect x="388" y="412" width="424" height="46" fill="#0A0A14"/>
+  <text x="600" y="444" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-weight="700" font-size="22" letter-spacing="4" fill="#FFF4E6">ACID MINIMAL · LILLE · 2026</text>
 </svg>

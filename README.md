@@ -1,8 +1,6 @@
 # fantomatik
 
-le fantôme dans la machine.
-
-acid minimal sur machines, depuis lille. une transmission spectrale, captée nuit après nuit.
+acid minimal sur machines, depuis lille. une transmission acide, captée nuit après nuit.
 
 premier ep, fuel the kollapse (FTK-001), 3 titres, en préparation. premier concert le 5 XII 2026, à lille.
 
