@@ -1,895 +1,507 @@
 /* ============================================================================
    fantomatik. feuille de style.
-   direction a : spectrale / hauntologique (crt, phosphore).
-   règle de rédaction : aucun tiret cadratin dans les commentaires non plus.
+   identite risographie / rave : bleu electrique, rose fluo, jaune acide,
+   bordures pellicule, typo lourde en capitales, grain et surimpression.
+   regle de redaction : aucun tiret cadratin dans les commentaires non plus.
 
    sommaire :
-   1. polices auto-hébergées
-   2. variables (couleurs, type)
+   1. police d'affichage
+   2. variables
    3. base et reset
-   4. couches de texture (scanlines, grain, vignette, roll bar)
-   5. hero et wordmark
-   6. sections (manifeste, transmission, liens)
-   7. footer
-   8. écran de boot
-   9. interactions (glitch, focus, reveal)
-   10. réduction de mouvement et requêtes média
+   4. texture (grain, trame) et pellicule
+   5. mise en page (wrap, sections)
+   6. hero
+   7. presentation
+   8. transmission
+   9. en direct (concert, compte a rebours)
+   10. liens et footer
+   11. reveal et easter egg
+   12. reduction de mouvement et responsive
    ============================================================================ */
 
-/* 1. polices ---------------------------------------------------------------- */
+/* 1. police ---------------------------------------------------------------- */
 
 @font-face {
-  font-family: 'Major Mono Display';
+  font-family: 'Anton';
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url('../assets/fonts/major-mono-display-400.woff2') format('woff2');
+  src: url('../assets/fonts/anton-400.woff2') format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
-    U+02DC, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215;
-}
-
-@font-face {
-  font-family: 'Space Mono';
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url('../assets/fonts/space-mono-400.woff2') format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
-    U+02DC, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215;
-}
-
-@font-face {
-  font-family: 'Space Mono';
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url('../assets/fonts/space-mono-700.woff2') format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
-    U+02DC, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215;
+    U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215;
 }
 
 /* 2. variables -------------------------------------------------------------- */
 
 :root {
-  /* couleurs (cahier des charges, section 4.1). palette froide, un seul accent. */
-  --noir: #0A0B0D;
-  --noir-2: #101317;
-  --phosphore: #4DFFB0;
-  --phosphore-glow: rgba(77, 255, 176, 0.45);
-  --brume: #B7C3BD;
-  /* note accessibilite : la valeur du cahier (#6B7771) tombe a 4.22 sur le noir,
-     sous le seuil aa (4.5) pour le petit texte. legere remontee a #7A8881 (5.3),
-     toujours nettement plus discrete que --brume, pour respecter aa partout. */
-  --brume-faible: #7A8881;
-  --ligne: rgba(183, 195, 189, 0.12);
+  --blue: #2F2BE6;     /* fond, encre bleue */
+  --blue-d: #1E1CA8;   /* bleu profond */
+  --pink: #FF2D8E;     /* rose fluo */
+  --yellow: #ECF312;   /* jaune acide */
+  --cream: #FFF4E6;    /* blanc casse */
+  --ink: #0A0A14;      /* noir d'encre */
 
-  /* typographie */
-  --mono: 'Space Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
-  --display: 'Major Mono Display', 'Space Mono', ui-monospace, 'SFMono-Regular',
-    Menlo, Consolas, monospace;
+  --disp: 'Anton', 'Arial Narrow', Impact, 'Haettenschweiler', sans-serif;
+  --body: 'Helvetica Neue', Arial, system-ui, sans-serif;
 
-  /* afterglow standard des éléments en phosphore */
-  --glow: 0 0 6px var(--phosphore-glow), 0 0 18px var(--phosphore-glow);
-
-  /* rythme */
-  --mesure: 34rem; /* largeur de colonne étroite et calme */
+  --mesure: 62rem;     /* largeur de contenu */
 }
 
 /* 3. base et reset ---------------------------------------------------------- */
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
+*, *::before, *::after { box-sizing: border-box; }
 
 html {
-  background: var(--noir);
+  background: var(--blue);
   scroll-behavior: smooth;
 }
 
 body {
   margin: 0;
   min-height: 100vh;
-  background: var(--noir);
-  color: var(--brume);
-  font-family: var(--mono);
+  background: var(--blue);
+  color: var(--cream);
+  font-family: var(--body);
   font-size: 16px;
-  font-weight: 400;
-  line-height: 1.6;
-  text-transform: lowercase; /* minuscules par défaut, y compris le wordmark */
+  line-height: 1.35;
   -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
   overflow-x: hidden;
 }
 
-/* les codes alphanumériques restent en capitales (ftk-001) */
-.release-code {
-  text-transform: uppercase;
-}
+p { margin: 0; }
 
-p {
-  margin: 0;
-}
+a { color: var(--yellow); text-decoration: none; }
 
-a {
-  color: var(--phosphore);
-  text-decoration: none;
-}
+/* 4. texture et pellicule --------------------------------------------------- */
 
-/* 4. couches de texture ----------------------------------------------------- */
-/* toutes décoratives, jamais interactives, empilées au-dessus du contenu. */
-
-.fx {
+/* grain riso : turbulence svg, multiplie sur tout, comme l'encre qui accroche. */
+.grain {
   position: fixed;
   inset: 0;
+  z-index: 80;
   pointer-events: none;
-  z-index: 50;
-}
-
-/* scanlines : fines lignes horizontales, opacité très basse. */
-.fx-scanlines {
-  background-image: repeating-linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 0) 0,
-    rgba(0, 0, 0, 0) 2px,
-    rgba(0, 0, 0, 0.55) 3px,
-    rgba(0, 0, 0, 0) 4px
-  );
-  opacity: 0.05;
+  opacity: 0.2;
   mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-/* grain de film : turbulence svg en data-uri, statique pour la perf. */
-.fx-grain {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size: 160px 160px;
-  opacity: 0.045;
+/* trame demi-teinte tres discrete. */
+.halftone {
+  position: fixed;
+  inset: 0;
+  z-index: 79;
+  pointer-events: none;
+  opacity: 0.08;
+  background-image: radial-gradient(var(--ink) 1.1px, transparent 1.3px);
+  background-size: 7px 7px;
 }
 
-/* vignette : assombrissement radial doux des bords. */
-.fx-vignette {
-  background: radial-gradient(
-    ellipse at center,
-    rgba(0, 0, 0, 0) 52%,
-    rgba(0, 0, 0, 0.55) 100%
+/* pellicule : bande de tirets jaunes facon film / ticket. les creux laissent
+   voir le fond. separateur entre toutes les zones. */
+.strip {
+  height: 24px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--yellow) 0 16px,
+    transparent 16px 30px
   );
 }
 
-/* roll bar crt : bande de luminance qui descend lentement. optionnelle. */
-.fx-rollbar {
-  background: linear-gradient(
-    to bottom,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(77, 255, 176, 0.03) 45%,
-    rgba(255, 255, 255, 0.04) 50%,
-    rgba(77, 255, 176, 0.03) 55%,
-    rgba(255, 255, 255, 0) 100%
-  );
-  height: 40vh;
-  inset: auto 0 auto 0;
-  top: -40vh;
-  animation: rollbar 9s linear infinite;
+/* 5. mise en page ----------------------------------------------------------- */
+
+.wrap {
+  max-width: var(--mesure);
+  margin: 0 auto;
+  padding: 0 clamp(1.2rem, 5vw, 3rem);
 }
 
-@keyframes rollbar {
-  0% { transform: translateY(0); }
-  100% { transform: translateY(140vh); }
+.hero,
+.sec,
+.foot {
+  padding-top: clamp(2.4rem, 6vw, 4.5rem);
+  padding-bottom: clamp(2.4rem, 6vw, 4.5rem);
 }
 
-/* 5. hero et wordmark ------------------------------------------------------- */
+/* labels de section : pastille rose, encre noire, legerement penchee. */
+.kicker {
+  display: inline-block;
+  margin: 0 0 1.1rem;
+  background: var(--pink);
+  color: var(--ink);
+  font-family: var(--disp);
+  font-weight: 400;
+  font-size: clamp(0.95rem, 3vw, 1.45rem);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.2em 0.55em;
+  transform: rotate(-1.6deg);
+}
+
+/* 6. hero ------------------------------------------------------------------- */
 
 .hero {
   position: relative;
+  text-align: center;
+  padding-top: clamp(3rem, 8vw, 6rem);
+  padding-bottom: clamp(3rem, 8vw, 6rem);
+}
+
+.word {
+  margin: 0;
+  font-family: var(--disp);
+  font-weight: 400;
+  font-size: clamp(3.2rem, 15vw, 11rem);
+  line-height: 0.82;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  color: var(--pink);
+  /* surimpression / decalage de reperage riso. */
+  text-shadow: 6px 6px 0 var(--yellow), -3px -2px 0 rgba(0, 200, 255, 0.4);
+  cursor: pointer;
+}
+
+.tagline {
+  margin: clamp(0.8rem, 2.5vw, 1.6rem) 0 0;
+  font-family: var(--disp);
+  font-size: clamp(1rem, 4.6vw, 2.3rem);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--yellow);
+  text-shadow: 3px 3px 0 var(--ink);
+}
+
+.meta {
+  display: inline-block;
+  margin-top: 1.2rem;
+  background: var(--ink);
+  color: var(--cream);
+  font-weight: 700;
+  font-size: clamp(0.62rem, 2vw, 0.82rem);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 0.45em 0.8em;
+}
+
+/* badge sticker rotatif, coin haut droit du hero (relatif au hero, pas au contenu). */
+.badge {
+  position: absolute;
+  top: clamp(0.5rem, 2vw, 1.5rem);
+  right: clamp(0.5rem, 2vw, 1.5rem);
+  width: clamp(64px, 11vw, 104px);
+  height: clamp(64px, 11vw, 104px);
+  border-radius: 50%;
+  background: var(--yellow);
+  color: var(--blue-d);
+  border: 4px solid var(--ink);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 100vh;
-  min-height: 100svh;
-  padding: 8vh clamp(0.75rem, 4vw, 2rem) 6rem;
-  text-align: center;
-  overflow: hidden;
+  font-family: var(--disp);
+  font-size: clamp(0.85rem, 2.4vw, 1.2rem);
+  line-height: 0.9;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  transform: rotate(-13deg);
+  box-shadow: 5px 5px 0 var(--pink);
 }
 
-/* la ghost-waveform occupe tout le fond du hero, sous le wordmark. */
-#waveform {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 0;
-  opacity: 0.62;
-  /* bloom doux global, complète l'afterglow tracé sur le canvas. */
-  filter: drop-shadow(0 0 4px var(--phosphore-glow));
+/* 7. presentation ----------------------------------------------------------- */
+
+.lead {
+  max-width: 24ch;
+  font-family: var(--disp);
+  font-size: clamp(1.8rem, 7vw, 4rem);
+  line-height: 1.02;
+  text-transform: uppercase;
+  color: var(--cream);
 }
 
-.hero-inner {
-  position: relative;
-  z-index: 2;
+.lead-punch {
+  color: var(--yellow);
+  text-shadow: 4px 4px 0 var(--ink);
 }
 
-.wordmark {
-  margin: 0;
-  font-family: var(--display);
-  font-weight: 400;
-  font-size: clamp(2.2rem, 12vw, 9.5rem);
-  line-height: 1;
-  letter-spacing: 0.01em;
-  color: var(--phosphore);
-  text-shadow: var(--glow);
-  will-change: opacity;
-}
-
-.tagline {
-  margin: clamp(1.1rem, 3vw, 2rem) 0 0;
-  font-family: var(--mono);
-  font-size: clamp(0.95rem, 2.6vw, 1.35rem);
-  letter-spacing: 0.12em;
-  color: var(--brume);
-}
-
-.techline {
-  /* une seule ligne sur grand ecran ; repli propre en deux lignes sur telephone. */
-  margin: 1.1rem auto 0;
-  max-width: 90vw;
-  font-size: clamp(0.62rem, 1.6vw, 0.82rem);
-  letter-spacing: 0.1em;
-  color: var(--brume-faible);
-}
-
-@media (min-width: 30rem) {
-  .techline {
-    letter-spacing: 0.18em;
-  }
-}
-
-/* indice de scroll discret, en bas du hero. */
-.scroll-hint {
-  position: absolute;
-  z-index: 2;
-  bottom: 1.6rem;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
-  color: var(--brume-faible);
-  font-size: 0.66rem;
-  letter-spacing: 0.26em;
-}
-
-.scroll-hint:hover,
-.scroll-hint:focus-visible {
-  color: var(--phosphore);
-}
-
-.scroll-hint-arrow {
-  font-size: 0.9rem;
-  animation: bob 2.4s ease-in-out infinite;
-}
-
-@keyframes bob {
-  0%, 100% { transform: translateY(0); opacity: 0.55; }
-  50% { transform: translateY(4px); opacity: 1; }
-}
-
-/* 6. sections --------------------------------------------------------------- */
-
-main {
-  position: relative;
-  z-index: 2;
-}
-
-section {
-  max-width: var(--mesure);
-  margin: 0 auto;
-  padding: clamp(3rem, 10vh, 7rem) 1.5rem;
-}
-
-/* sequenceurs 16 pas. separateurs de sections, cadence 120 bpm.
-   16 doubles-croches = 1 mesure = 2 s a 120 bpm : la tete de lecture balaye les
-   16 pas en 2 s, un pas toutes les 0,125 s. les pas allumes (.on) dessinent le
-   motif (defini par data-seq dans le html). construit par js ; sans js, une fine
-   ligne reste affichee en repli. chaque section peut avoir un motif different. */
-.seq {
-  --seq-duree: 2s; /* 16 pas a 120 bpm ; baisser la valeur accelere le tempo */
-  position: relative;
-  max-width: 22rem;
-  margin: 0 auto clamp(2.25rem, 6vh, 4rem);
-  border-bottom: 1px solid var(--ligne); /* repli si js indisponible */
-}
-
-.seq.seq--ready {
-  border-bottom: 0;
-  display: grid;
-  grid-template-columns: repeat(16, 1fr);
-  align-items: center;
-  height: 14px;
-}
-
-.seq-step {
-  width: 55%;
-  height: 6px;
-  margin: 0 auto;
-  border-radius: 1px;
-  background: rgba(122, 136, 129, 0.22);
-}
-
-.seq-step.on {
-  width: 62%;
-  height: 8px;
-  background: var(--phosphore);
-  box-shadow: 0 0 5px var(--phosphore-glow);
-}
-
-/* tete de lecture : une cellule de large, balaie les 16 pas en boucle. */
-.seq-head {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: calc(100% / 16);
-  height: 100%;
-  pointer-events: none;
-  border-radius: 2px;
-  background: rgba(77, 255, 176, 0.16);
-  box-shadow: 0 0 8px var(--phosphore-glow);
-  mix-blend-mode: screen;
-  animation: seq-head var(--seq-duree) steps(16, end) infinite;
-}
-
-@keyframes seq-head {
-  from { transform: translateX(0); }
-  to { transform: translateX(1600%); }
-}
-
-.section-titre {
-  margin: 0 0 2rem;
-  font-family: var(--mono);
-  font-weight: 400;
-  font-size: 0.72rem;
-  letter-spacing: 0.34em;
-  color: var(--brume-faible);
-}
-
-/* manifeste : colonne étroite, façon log, beaucoup d'air. */
-.manifeste-corps p {
-  margin: 0 0 1.4rem;
-  font-size: clamp(1rem, 2.5vw, 1.18rem);
-  line-height: 1.85;
-  color: var(--brume);
-}
-
-.manifeste-corps p:last-child {
-  margin-bottom: 0;
-  color: var(--phosphore);
-  text-shadow: var(--glow);
-  /* meme respiration que l'indice « capter le signal » : pulse doux qui flotte. */
-  animation: pulse-signal 2.4s ease-in-out infinite;
-}
-
-@keyframes pulse-signal {
-  0%, 100% {
-    opacity: 0.7;
-    transform: translateY(0);
-    text-shadow: 0 0 6px var(--phosphore-glow);
-  }
-  50% {
-    opacity: 1;
-    transform: translateY(3px);
-    text-shadow: var(--glow), 0 0 14px var(--phosphore-glow);
-  }
-}
-
-/* transmission / catalogue. */
-.releases {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
+/* 8. transmission ----------------------------------------------------------- */
 
 .release {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: baseline;
-  gap: 1rem;
-  padding: 1.1rem 1.25rem;
-  background: var(--noir-2);
-  border: 1px solid var(--ligne);
-}
-
-.release-code {
-  font-weight: 700;
-  letter-spacing: 0.16em;
-  color: var(--phosphore);
-  text-shadow: var(--glow);
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
 }
 
 .release-title {
-  color: var(--brume);
-}
-
-.release-year {
-  color: var(--brume-faible);
-  font-size: 0.82rem;
-  letter-spacing: 0.1em;
+  font-family: var(--disp);
+  font-size: clamp(2.4rem, 11vw, 7rem);
+  line-height: 0.9;
+  text-transform: uppercase;
+  color: var(--pink);
+  text-shadow: 5px 5px 0 var(--ink);
 }
 
 .release[data-status="soon"] .release-title {
-  color: var(--brume-faible);
+  color: var(--yellow);
+  text-shadow: 5px 5px 0 var(--ink);
+}
+
+.release-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.6rem 1.1rem;
+}
+
+.release-code {
+  font-family: var(--disp);
+  color: var(--ink);
+  background: var(--cream);
+  font-size: clamp(1rem, 4vw, 1.9rem);
+  letter-spacing: 0.05em;
+  padding: 0.08em 0.4em;
+}
+
+.release-year {
+  font-family: var(--disp);
+  color: var(--cream);
+  font-size: clamp(1rem, 4vw, 1.9rem);
 }
 
 .release-link {
-  grid-column: 1 / -1;
   margin-top: 0.4rem;
+  font-family: var(--disp);
+  font-size: clamp(1rem, 3.5vw, 1.6rem);
+  text-transform: uppercase;
+  color: var(--yellow);
 }
 
-.transmission-note {
-  margin: 1.6rem 0 0;
-  font-size: 0.92rem;
-  color: var(--brume-faible);
+.status {
+  margin-top: 1.3rem;
+  max-width: 34ch;
+  font-weight: 700;
+  font-size: clamp(0.82rem, 2.6vw, 1.05rem);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--cream);
 }
 
-.cta-wrap {
-  margin: 2.4rem 0 0;
+/* 9. en direct -------------------------------------------------------------- */
+/* bloc inverse : fond rose, encre noire. */
+
+.live {
+  background: var(--pink);
+  color: var(--ink);
 }
 
-/* call to action principal vers bandcamp. */
+.live .kicker {
+  background: var(--ink);
+  color: var(--yellow);
+}
+
+.affiche {
+  margin: 1.6rem 0;
+  max-width: clamp(220px, 60vw, 330px);
+}
+
+.affiche img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 5px solid var(--ink);
+  box-shadow: 10px 10px 0 var(--yellow);
+  transform: rotate(-2deg);
+}
+
+.date {
+  font-family: var(--disp);
+  font-size: clamp(2rem, 10vw, 5.5rem);
+  line-height: 0.95;
+  text-transform: uppercase;
+  color: var(--ink);
+  text-shadow: 5px 5px 0 var(--yellow);
+}
+
+.place {
+  margin-top: 0.6rem;
+  font-weight: 700;
+  font-size: clamp(0.8rem, 2.6vw, 1.05rem);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+/* compte a rebours : decompte machine, chiffres lourds. */
+.count {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  margin-top: 1.1rem;
+  font-family: var(--disp);
+}
+
+.count:empty { display: none; }
+
+.count-grp { display: inline-flex; align-items: baseline; gap: 0.18em; }
+
+.count-num {
+  font-size: clamp(1.6rem, 7vw, 3.2rem);
+  color: var(--cream);
+  text-shadow: 3px 3px 0 var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.count-unite {
+  font-size: clamp(0.7rem, 2.4vw, 1rem);
+  color: var(--ink);
+  letter-spacing: 0.04em;
+}
+
+.count-sep {
+  font-size: clamp(1.4rem, 6vw, 2.8rem);
+  color: var(--ink);
+  animation: blink 1s steps(1, end) infinite;
+}
+
+.count--live {
+  font-size: clamp(1.4rem, 6vw, 3rem);
+  color: var(--ink);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0.2; }
+}
+
+/* call to action principal : bouton epais, ombre dure. */
+.cta-wrap { margin-top: clamp(1.6rem, 4vw, 2.4rem); }
+
 .cta {
   display: inline-block;
-  padding: 0.85rem 1.5rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  color: var(--phosphore);
-  border: 1px solid var(--phosphore);
-  text-shadow: var(--glow);
-  box-shadow: inset 0 0 0 rgba(77, 255, 176, 0), 0 0 0 rgba(77, 255, 176, 0);
-  transition: background-color 0.25s ease, box-shadow 0.25s ease, color 0.25s ease;
+  background: var(--yellow);
+  color: var(--blue-d);
+  font-family: var(--disp);
+  font-size: clamp(1.1rem, 4.5vw, 2.1rem);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  padding: 0.42em 0.9em;
+  border: 4px solid var(--ink);
+  box-shadow: 9px 9px 0 var(--blue);
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
 }
 
 .cta:hover,
 .cta:focus-visible {
-  background: var(--phosphore);
-  color: var(--noir);
-  text-shadow: none;
-  box-shadow: 0 0 22px var(--phosphore-glow);
+  transform: translate(3px, 3px);
+  box-shadow: 5px 5px 0 var(--blue);
 }
 
-/* liens : liste mono minimale. */
+/* 10. liens et footer ------------------------------------------------------- */
+
 .liens-liste {
   list-style: none;
   margin: 0;
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.9rem;
+  gap: 0.6rem;
 }
 
 .liens-liste a {
-  font-size: 1.05rem;
-  letter-spacing: 0.08em;
-  text-shadow: var(--glow);
+  font-family: var(--disp);
+  font-size: clamp(1.8rem, 8vw, 4rem);
+  line-height: 1;
+  text-transform: uppercase;
+  color: var(--yellow);
+  text-shadow: 4px 4px 0 var(--ink);
+  transition: color 0.12s ease;
 }
 
-/* en direct. l'affiche, traitee comme un signal capte sur le moniteur. -------- */
-/* couleurs de l'affiche conservees ; on ajoute la couche crt par dessus.        */
-
-.affiche {
-  margin: 0 auto;
-  max-width: clamp(220px, 62vw, 320px); /* reste petite, ne domine pas */
+.liens-liste a:hover,
+.liens-liste a:focus-visible {
+  color: var(--pink);
 }
 
-.affiche-cadre {
-  position: relative;
-  overflow: hidden;
-  background: #000;
-  border: 1px solid rgba(77, 255, 176, 0.7);
-  box-shadow: 0 0 12px var(--phosphore-glow), 0 0 36px var(--phosphore-glow),
-    inset 0 0 32px rgba(0, 0, 0, 0.8);
-  border-radius: 2px;
-  line-height: 0;
-}
-
-.affiche-cadre img {
-  display: block;
-  width: 100%;
-  height: auto;
-  /* rendu moniteur appuye : aberration chromatique permanente plus decrochages. */
-  filter: contrast(1.12) saturate(1.2) brightness(0.98)
-    drop-shadow(-1.5px 0 rgba(0, 255, 220, 0.5)) drop-shadow(1.5px 0 rgba(255, 40, 200, 0.45));
-  animation: affiche-aberration 2.4s ease-in-out infinite alternate,
-    affiche-tear 5.5s steps(1, end) infinite;
-}
-
-/* scanlines locales, denses, avec une lente derive verticale */
-.affiche-cadre::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: repeating-linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 0) 0,
-    rgba(0, 0, 0, 0) 1px,
-    rgba(0, 0, 0, 0.55) 2px,
-    rgba(0, 0, 0, 0) 3px
-  );
-  opacity: 0.6;
-  mix-blend-mode: multiply;
-  animation: affiche-scan-drift 8s linear infinite;
-}
-
-@keyframes affiche-scan-drift {
-  to { background-position: 0 9px; }
-}
-
-/* balayage lumineux vif qui descend, comme un rafraichissement crt rapide */
-.affiche-balayage {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  height: 38%;
-  pointer-events: none;
-  background: linear-gradient(
-    to bottom,
-    rgba(77, 255, 176, 0) 0%,
-    rgba(77, 255, 176, 0.22) 46%,
-    rgba(255, 255, 255, 0.2) 50%,
-    rgba(77, 255, 176, 0.22) 54%,
-    rgba(77, 255, 176, 0) 100%
-  );
-  mix-blend-mode: screen;
-  transform: translateY(-130%);
-  animation: affiche-sweep 3.6s linear infinite;
-}
-
-@keyframes affiche-sweep {
-  0% { transform: translateY(-130%); }
-  100% { transform: translateY(360%); }
-}
-
-/* aberration chromatique permanente qui respire, de discrete a marquee */
-@keyframes affiche-aberration {
-  0% {
-    filter: contrast(1.1) saturate(1.16) brightness(0.98)
-      drop-shadow(-1px 0 rgba(0, 255, 220, 0.4)) drop-shadow(1px 0 rgba(255, 40, 200, 0.35));
-  }
-  100% {
-    filter: contrast(1.14) saturate(1.24) brightness(1)
-      drop-shadow(-3px 0 rgba(0, 255, 220, 0.62)) drop-shadow(3px 0 rgba(255, 40, 200, 0.52));
-  }
-}
-
-/* decrochages du signal : breves dechirures et sauts, environ toutes les 2 s */
-@keyframes affiche-tear {
-  0%, 11%, 13.5%, 37%, 40%, 69%, 72%, 100% {
-    transform: translate(0, 0);
-    clip-path: inset(0 0 0 0);
-    opacity: 1;
-  }
-  11.5% { transform: translate(-5px, 0); clip-path: inset(18% 0 58% 0); opacity: 0.85; }
-  12.5% { transform: translate(6px, 0); clip-path: inset(52% 0 26% 0); opacity: 1; }
-  37.5% { transform: translate(7px, 0); clip-path: inset(8% 0 76% 0); opacity: 0.8; }
-  39% { transform: translate(-6px, 0); clip-path: inset(68% 0 14% 0); opacity: 1; }
-  69.5% { transform: translate(-7px, 0); clip-path: inset(38% 0 42% 0); opacity: 0.9; }
-  71% { transform: translate(5px, 0); clip-path: inset(4% 0 84% 0); opacity: 1; }
-}
-
-/* survol : glitch franc et continu tant que la souris reste sur l'affiche */
-.affiche-cadre:hover img {
-  animation: affiche-glitch 0.5s steps(2, end) infinite;
-}
-
-@keyframes affiche-glitch {
-  0% {
-    filter: contrast(1.18) saturate(1.3)
-      drop-shadow(-4px 0 rgba(0, 255, 220, 0.75)) drop-shadow(4px 0 rgba(255, 40, 200, 0.65));
-    transform: translate(-3px, 0);
-    clip-path: inset(0 0 0 0);
-  }
-  25% {
-    transform: translate(4px, -1px);
-    clip-path: inset(14% 0 56% 0);
-    filter: contrast(1.24) saturate(1.4)
-      drop-shadow(5px 0 rgba(0, 255, 220, 0.75)) drop-shadow(-5px 0 rgba(255, 40, 200, 0.65));
-  }
-  50% { transform: translate(-4px, 1px); clip-path: inset(60% 0 20% 0); }
-  75% { transform: translate(3px, 0); clip-path: inset(34% 0 40% 0); }
-  100% {
-    filter: contrast(1.18) saturate(1.3)
-      drop-shadow(-4px 0 rgba(0, 255, 220, 0.75)) drop-shadow(4px 0 rgba(255, 40, 200, 0.65));
-    transform: translate(0, 0);
-    clip-path: inset(0 0 0 0);
-  }
-}
-
-.affiche-legende {
-  margin: 1.1rem 0 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
+.foot {
   text-align: center;
+  padding-top: clamp(1.6rem, 4vw, 2.4rem);
+  padding-bottom: clamp(1.6rem, 4vw, 2.4rem);
 }
 
-.affiche-label {
-  font-size: 0.7rem;
-  letter-spacing: 0.28em;
-  color: var(--brume-faible);
-}
-
-.affiche-date {
+.foot p {
   font-weight: 700;
-  letter-spacing: 0.14em;
-  color: var(--phosphore);
-  text-shadow: var(--glow);
+  font-size: clamp(0.6rem, 2vw, 0.78rem);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--yellow);
 }
 
-/* compte a rebours du concert : decompte sobre, registre machine. */
-.compte {
-  display: flex;
-  justify-content: center;
-  align-items: baseline;
-  gap: 0.55rem;
-  margin-top: 0.9rem;
-  font-size: 0.82rem;
-  letter-spacing: 0.1em;
-  color: var(--brume-faible);
-}
+/* 11. reveal et easter egg -------------------------------------------------- */
 
-.compte:empty {
-  display: none; /* rien tant que js n a pas rempli le decompte */
-}
-
-.compte-grp {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 0.18em;
-}
-
-.compte-num {
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-  color: var(--phosphore);
-  text-shadow: 0 0 6px var(--phosphore-glow);
-}
-
-.compte-unite {
-  font-size: 0.72em;
-  color: var(--brume-faible);
-}
-
-.compte-sep {
-  color: var(--brume-faible);
-  animation: compte-blink 1s steps(1, end) infinite;
-}
-
-.compte--live {
-  color: var(--phosphore);
-  text-shadow: var(--glow);
-  letter-spacing: 0.22em;
-}
-
-@keyframes compte-blink {
-  0%, 50% { opacity: 1; }
-  51%, 100% { opacity: 0.25; }
-}
-
-/* 7. footer ----------------------------------------------------------------- */
-
-.pied {
-  position: relative;
-  z-index: 2;
-  padding: 3rem 1.5rem 3.5rem;
-  text-align: center;
-}
-
-.pied p {
-  font-size: 0.68rem;
-  letter-spacing: 0.18em;
-  color: var(--brume-faible);
-}
-
-/* 8. écran de boot ---------------------------------------------------------- */
-/* caché par défaut ; affiché seulement quand js a posé « boot-pending ». */
-
-#boot {
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding: 1.5rem;
-  background: var(--noir);
-}
-
-.boot-pending #boot {
-  display: flex;
-}
-
-#boot.is-leaving {
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.6s ease;
-}
-
-#boot-log {
-  margin: 0;
-  font-family: var(--mono);
-  font-size: clamp(0.8rem, 3.4vw, 1rem);
-  line-height: 1.9;
-  letter-spacing: 0.04em;
-  color: var(--phosphore);
-  text-shadow: var(--glow);
-  white-space: pre-wrap;
-}
-
-/* curseur clignotant en fin de log. */
-#boot-log::after {
-  content: '\2588';
-  display: inline-block;
-  margin-left: 0.1em;
-  animation: cursor 1s steps(1) infinite;
-}
-
-@keyframes cursor {
-  0%, 49% { opacity: 1; }
-  50%, 100% { opacity: 0; }
-}
-
-/* 9. interactions ----------------------------------------------------------- */
-
-/* focus clavier visible : anneau phosphore. */
+/* focus clavier visible : cadre jaune epais. */
 :focus-visible {
-  outline: 2px solid var(--phosphore);
-  outline-offset: 3px;
-  border-radius: 1px;
+  outline: 4px solid var(--yellow);
+  outline-offset: 2px;
 }
 
-/* glitch d'aberration chromatique au survol et au focus (clavier compris).
-   porté par le css pour fonctionner aussi au focus. */
-.wordmark:hover,
-.wordmark:focus-visible,
-a:hover,
-a:focus-visible {
-  animation: glitch 0.32s steps(2, end) 1;
+.live :focus-visible,
+.cta:focus-visible {
+  outline-color: var(--ink);
 }
 
-@keyframes glitch {
-  0% {
-    text-shadow: var(--glow);
-    transform: translate(0, 0);
-  }
-  25% {
-    text-shadow: -2px 0 rgba(77, 255, 220, 0.9), 2px 0 rgba(255, 77, 200, 0.7),
-      var(--glow);
-    transform: translate(1px, -1px);
-  }
-  50% {
-    text-shadow: 2px 0 rgba(77, 255, 220, 0.9), -2px 0 rgba(255, 77, 200, 0.7),
-      var(--glow);
-    transform: translate(-1px, 1px);
-  }
-  75% {
-    text-shadow: -1px 0 rgba(77, 255, 220, 0.8), 1px 0 rgba(255, 77, 200, 0.6),
-      var(--glow);
-    transform: translate(1px, 0);
-  }
-  100% {
-    text-shadow: var(--glow);
-    transform: translate(0, 0);
-  }
-}
-
-/* le wordmark est focusable au clavier pour offrir le même glitch ; il reste
-   non interactif (pas de lien). on lui donne donc tabindex via js seulement si
-   souhaité. par défaut, le hover suffit. */
-
-/* reveal au scroll : état initial caché uniquement si js est actif. */
+/* reveal au scroll : la zone se cale en place avec un leger redressement. */
 .js .reveal {
   opacity: 0;
-  transform: translateY(18px);
-  transition: opacity 0.8s ease, transform 0.8s ease;
+  transform: translateY(26px) rotate(-1.2deg);
+  transition: opacity 0.55s ease, transform 0.55s ease;
 }
 
 .js .reveal.revealed {
   opacity: 1;
-  transform: translateY(0);
+  transform: none;
 }
 
-/* flicker : js ajoute « is-flickering » au wordmark pour un creux d'opacité bref. */
-.wordmark.is-flickering {
-  opacity: 0.35;
+/* easter egg : secousse de mauvais reperage quand on touche le wordmark. */
+.word.shudder {
+  animation: shudder 0.4s steps(2, end) 1;
 }
 
-/* 10. réduction de mouvement et requêtes média ------------------------------ */
-
-/* tablettes et plus : la release passe sur une seule ligne. */
-@media (min-width: 36rem) {
-  .release-link {
-    grid-column: auto;
-    margin-top: 0;
-    text-align: right;
-  }
+@keyframes shudder {
+  0% { text-shadow: 6px 6px 0 var(--yellow), -3px -2px 0 rgba(0, 200, 255, 0.4); transform: translate(0, 0); }
+  25% { text-shadow: -8px 4px 0 var(--yellow), 8px -4px 0 var(--blue-d); transform: translate(4px, -2px); }
+  50% { text-shadow: 8px -6px 0 var(--blue-d), -8px 6px 0 var(--yellow); transform: translate(-5px, 3px); }
+  75% { text-shadow: -6px -4px 0 var(--yellow), 6px 4px 0 var(--blue-d); transform: translate(3px, 1px); }
+  100% { text-shadow: 6px 6px 0 var(--yellow), -3px -2px 0 rgba(0, 200, 255, 0.4); transform: translate(0, 0); }
 }
 
-/* respect strict de prefers-reduced-motion : site beau et lisible au repos. */
+/* 12. reduction de mouvement et responsive ---------------------------------- */
+
 @media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
+  html { scroll-behavior: auto; }
 
-  /* on coupe roll bar, bob, curseur, glitch, flicker. */
-  .fx-rollbar,
-  .scroll-hint-arrow,
-  #boot-log::after {
-    animation: none;
-  }
+  .count-sep { animation: none; }
+  .word { cursor: default; }
+  .word.shudder { animation: none; }
 
-  .scroll-hint-arrow {
-    opacity: 0.8;
-  }
+  .cta { transition: none; }
 
-  .wordmark:hover,
-  .wordmark:focus-visible,
-  a:hover,
-  a:focus-visible {
-    animation: none;
-  }
-
-  .wordmark.is-flickering {
-    opacity: 1;
-  }
-
-  /* le contenu apparaît immédiatement, sans décalage animé. */
   .js .reveal {
     opacity: 1;
     transform: none;
     transition: none;
   }
+}
 
-  /* l'écran de boot n'est jamais affiché (js ne pose pas « boot-pending »,
-     mais on verrouille aussi côté css par sécurité). */
-  .boot-pending #boot {
-    display: none;
+/* sous 40rem le wordmark remplit la largeur : le badge passe au-dessus, centre,
+   pour ne pas chevaucher le titre. */
+@media (max-width: 40rem) {
+  .badge {
+    position: static;
+    margin: 0 auto 1.1rem;
+    transform: rotate(-6deg);
   }
+}
 
-  /* affiche : on fige tout. le cadre crt et les scanlines restent, sans mouvement
-     ni aberration ni dechirure. image nette et stable. */
-  .affiche-cadre img,
-  .affiche-cadre:hover img {
-    animation: none;
-    filter: contrast(1.04) saturate(1.06);
-    clip-path: inset(0 0 0 0);
-    transform: none;
-  }
-
-  .affiche-cadre::after {
-    animation: none;
-  }
-
-  .affiche-balayage {
-    display: none;
-  }
-
-  /* sequenceurs : motif fige, tete de lecture cachee (pas de balayage). */
-  .seq-head {
-    animation: none;
-    display: none;
-  }
-
-  /* « fantomatik, c'est ça. » : phrase stable, sans pulsation ni flottement. */
-  .manifeste-corps p:last-child {
-    animation: none;
-    opacity: 1;
-    transform: none;
-  }
-
-  /* compte a rebours : il continue de tourner (info), mais les deux-points
-     ne clignotent pas. */
-  .compte-sep {
-    animation: none;
-  }
+@media (max-width: 24rem) {
+  .hero { padding-top: 1.6rem; }
 }

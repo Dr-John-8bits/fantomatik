@@ -5,23 +5,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <!--
-    fantomatik. page d'accueil unique, statique, hauntologique.
-    pour éditer la copie et les liens, voir le README (section « éditer le contenu »).
-    règle de rédaction : aucun tiret cadratin nulle part. point, virgule, point-virgule
-    ou deux-points selon la grammaire.
+    fantomatik. page d'accueil unique, statique.
+    identite risographie / rave : bleu electrique, rose fluo, jaune acide,
+    bordures pellicule, typo lourde en capitales, grain et surimpression.
+    regle de redaction : aucun tiret cadratin nulle part.
+    pour editer la copie et les liens, voir le README.
   -->
 
   <title>fantomatik · acid minimal · lille</title>
   <meta name="description" content="fantomatik, acid minimal sur machines depuis lille. le fantôme dans la machine. premier album fuel the kollapse (ftk-001), en préparation.">
 
-  <!--
-    url canonique et og:url : adresse github pages du compte dr-john-8bits, dépôt
-    « fantomatik ». si le dépôt porte un autre nom, ajustez le segment final ici et dans
-    les balises og:url, og:image et twitter:image ci-dessous.
-  -->
+  <!-- url canonique : compte github pages dr-john-8bits, dépôt « fantomatik ».
+       ajustez le segment final si le dépôt porte un autre nom. -->
   <link rel="canonical" href="https://dr-john-8bits.github.io/fantomatik/">
 
-  <meta name="theme-color" content="#0A0B0D">
+  <meta name="theme-color" content="#2F2BE6">
   <meta name="color-scheme" content="dark">
 
   <!-- open graph -->
@@ -32,202 +30,163 @@
   <meta property="og:image" content="https://dr-john-8bits.github.io/fantomatik/assets/og-image.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="le mot fantomatik en vert phosphore sur fond noir, avec un fragment de forme d'onde.">
+  <meta property="og:image:alt" content="fantomatik en rose fluo sur fond bleu électrique, bordures jaunes façon pellicule.">
   <meta property="og:locale" content="fr_FR">
 
   <!-- twitter -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="fantomatik · acid minimal · lille">
-  <meta name="twitter:description" content="le fantôme dans la machine. une transmission acide, captée depuis lille.">
+  <meta name="twitter:description" content="le fantôme dans la machine. une transmission acide depuis lille.">
   <meta name="twitter:image" content="https://dr-john-8bits.github.io/fantomatik/assets/og-image.png">
-  <meta name="twitter:image:alt" content="le mot fantomatik en vert phosphore sur fond noir.">
+  <meta name="twitter:image:alt" content="fantomatik en rose fluo sur fond bleu électrique.">
 
   <!-- favicon -->
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon.png">
 
-  <!-- polices auto-hébergées (aucune requête tierce). préchargement du critique. -->
-  <link rel="preload" href="assets/fonts/major-mono-display-400.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="assets/fonts/space-mono-400.woff2" as="font" type="font/woff2" crossorigin>
+  <!-- police d'affichage auto-hébergée (aucune requête tierce). -->
+  <link rel="preload" href="assets/fonts/anton-400.woff2" as="font" type="font/woff2" crossorigin>
 
   <link rel="stylesheet" href="css/style.css">
 
-  <!--
-    amélioration progressive : on signale que js est actif (classe « js ») et, hors
-    réduction de mouvement, on prépare l'écran de boot dès le premier rendu (classe
-    « boot-pending ») pour éviter un flash du hero. sans js : pas de boot, hero visible.
-  -->
-  <script>
-    (function () {
-      var el = document.documentElement;
-      el.classList.add('js');
-      var reduce = false;
-      try { reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
-      if (!reduce) el.classList.add('boot-pending');
-    })();
-  </script>
+  <!-- amélioration progressive : on signale que js est actif (reveal au scroll). -->
+  <script>document.documentElement.classList.add('js');</script>
 </head>
 
 <body>
 
-  <!-- ====================================================================
-       écran de boot (optionnel, passable au clic / scroll / touche).
-       caché par défaut ; activé par js hors réduction de mouvement.
-       décoratif : aria-hidden.
-       ==================================================================== -->
-  <div id="boot" aria-hidden="true">
-    <pre id="boot-log"></pre>
-  </div>
+  <!-- couches de texture (décoratives) -->
+  <div class="grain" aria-hidden="true"></div>
+  <div class="halftone" aria-hidden="true"></div>
+
+  <div class="strip" aria-hidden="true"></div>
 
   <!-- ====================================================================
-       hero plein écran
+       hero
        ==================================================================== -->
-  <header class="hero" id="hero">
-    <!-- ghost-waveform : élément signature, dessiné en fond. décoratif. -->
-    <canvas id="waveform" aria-hidden="true"></canvas>
-
-    <div class="hero-inner">
-      <h1 class="wordmark" id="wordmark">fantomatik</h1>
+  <header class="hero">
+    <div class="wrap">
+      <div class="badge" aria-hidden="true"><span>ftk</span><span>001</span></div>
+      <h1 class="word" id="word">fantomatik</h1>
       <p class="tagline">le fantôme dans la machine</p>
-      <p class="techline">fantomatik · acid minimal · lille, fr · est. 2026</p>
+      <p class="meta">acid minimal · lille, fr · est. 2026</p>
     </div>
-
-    <!-- indice de scroll discret -->
-    <a class="scroll-hint" href="#intro" aria-label="défiler vers la suite">
-      <span class="scroll-hint-text">capter le signal</span>
-      <span class="scroll-hint-arrow" aria-hidden="true">↓</span>
-    </a>
   </header>
 
+  <div class="strip" aria-hidden="true"></div>
+
   <main>
+
     <!-- ====================================================================
-         présentation. colonne étroite, façon log. dernière ligne en phosphore.
+         présentation
          ==================================================================== -->
-    <section class="manifeste reveal" id="intro" aria-label="présentation">
-      <!-- separateur : sequenceur 16 pas, cadence 120 bpm. data-seq = motif,
-           « 1 » allume le pas, « 0 » l'eteint. modifiable ; un motif par section. -->
-      <div class="seq" data-seq="1000100010001000" aria-hidden="true"></div>
-      <div class="manifeste-corps">
-        <p>juste des machines qui tournent en boucle, à lille.</p>
-        <p>une basse acide, tordue jusqu'à ce qu'elle ait l'air vivante.</p>
-        <p>fantomatik, c'est ça.</p>
+    <section class="sec intro reveal" aria-label="présentation">
+      <div class="wrap">
+        <p class="lead">
+          juste des machines qui tournent en boucle, à lille. une basse acide,
+          tordue jusqu'à ce qu'elle ait l'air vivante.
+          <span class="lead-punch">fantomatik, c'est ça.</span>
+        </p>
       </div>
     </section>
 
+    <div class="strip" aria-hidden="true"></div>
+
     <!-- ====================================================================
          transmission / catalogue.
-         état d'attente assumé tant qu'il n'y a pas de sortie.
-
-         patron de sortie : pour publier une vraie sortie, dupliquez un bloc
-         <article class="release"> et remplissez les champs. l'attribut data-status
-         vaut "soon" (à venir) ou "out" (disponible). exemple prêt à l'emploi :
-
+         patron de sortie : dupliquer un bloc <article class="release"> et
+         remplir code, titre, année, lien. data-status = "soon" ou "out".
          <article class="release" data-status="out">
            <span class="release-code">FTK-002</span>
-           <span class="release-title">titre de la sortie</span>
+           <span class="release-title">titre</span>
            <span class="release-year">2026</span>
            <a class="release-link" href="https://fantomatik.bandcamp.com/album/xxx"
               target="_blank" rel="noopener noreferrer">écouter →</a>
          </article>
          ==================================================================== -->
-    <section class="transmission reveal" id="transmission" aria-labelledby="transmission-titre">
-      <div class="seq" data-seq="1010001010100010" aria-hidden="true"></div>
-      <h2 class="section-titre" id="transmission-titre">transmission</h2>
-
-      <div class="releases">
-        <article class="release" data-status="soon">
-          <span class="release-code">FTK-001</span>
-          <span class="release-title">fuel the kollapse</span>
-          <span class="release-year">2026</span>
-        </article>
-      </div>
-
-      <p class="transmission-note">en cours de composition, production, enregistrement. revenez capter le signal.</p>
-
-      <!--
-        emplacement pour le lecteur bandcamp. quand une sortie existera, collez ici
-        l'embed fourni par bandcamp (iframe). exemple :
-        <div class="bandcamp-embed">
-          <iframe style="border:0;width:100%;height:120px" src="https://bandcamp.com/EmbeddedPlayer/album=..." seamless></iframe>
+    <section class="sec transmission reveal" id="transmission" aria-labelledby="transmission-titre">
+      <div class="wrap">
+        <h2 class="kicker" id="transmission-titre">transmission</h2>
+        <div class="releases">
+          <article class="release" data-status="soon">
+            <span class="release-title">fuel the kollapse</span>
+            <span class="release-meta">
+              <span class="release-code">FTK-001</span>
+              <span class="release-year">2026</span>
+            </span>
+          </article>
         </div>
-      -->
-
-      <p class="cta-wrap">
-        <a class="cta" href="https://fantomatik.bandcamp.com/" target="_blank" rel="noopener noreferrer">suivre sur bandcamp →</a>
-      </p>
+        <p class="status">en cours de composition · production · enregistrement.</p>
+        <!--
+          emplacement du lecteur bandcamp : à la sortie de FTK-001, collez ici
+          l'iframe fournie par bandcamp (avec un attribut title explicite).
+        -->
+      </div>
     </section>
 
-    <!-- ====================================================================
-         en direct. première date.
-         l'affiche est traitée comme un signal capté sur le moniteur hanté
-         (cadre crt, balayage lumineux, vacillement, glitch chromatique au survol).
-         visuel provisoire : pour la vraie affiche, remplacez le fichier
-         assets/affiche-5-xii-26.webp (idéalement ~640px de large) et mettez à jour
-         le texte alternatif, le label et la date ci-dessous.
-         ==================================================================== -->
-    <section class="live reveal" id="live" aria-labelledby="live-titre">
-      <div class="seq" data-seq="1011010110110100" aria-hidden="true"></div>
-      <h2 class="section-titre" id="live-titre">en direct</h2>
+    <div class="strip" aria-hidden="true"></div>
 
-      <figure class="affiche">
-        <div class="affiche-cadre">
+    <!-- ====================================================================
+         en direct. premier concert. bloc inversé (fond rose).
+         affiche provisoire : remplacez assets/affiche-5-xii-26.webp et le texte.
+         compte à rebours : data-cible pilote le décompte (date iso, heure éditable).
+         ==================================================================== -->
+    <section class="sec live reveal" id="live" aria-labelledby="live-titre">
+      <div class="wrap">
+        <h2 class="kicker" id="live-titre">en direct</h2>
+
+        <figure class="affiche">
           <img src="assets/affiche-5-xii-26.webp" width="640" height="906"
                loading="lazy" decoding="async"
                alt="affiche du premier concert de fantomatik, le 5 décembre 2026 à lille.">
-          <span class="affiche-balayage" aria-hidden="true"></span>
-        </div>
-        <figcaption class="affiche-legende">
-          <span class="affiche-label">premier concert</span>
-          <span class="affiche-date">5 XII 2026 · lille</span>
-          <!-- compte a rebours : la date lisible ci-dessus reste la source ;
-               data-cible (date iso) pilote le decompte. ajustez l'heure au besoin. -->
-          <span class="compte" data-cible="2026-12-05T20:00:00+01:00" aria-hidden="true"></span>
-        </figcaption>
-      </figure>
+        </figure>
+
+        <p class="date">05 · XII · 2026</p>
+        <p class="place">premier concert · lille</p>
+        <p class="count" data-cible="2026-12-05T20:00:00+01:00" aria-hidden="true"></p>
+
+        <p class="cta-wrap">
+          <a class="cta" href="https://fantomatik.bandcamp.com/" target="_blank" rel="noopener noreferrer">suivre sur bandcamp →</a>
+        </p>
+      </div>
     </section>
+
+    <div class="strip" aria-hidden="true"></div>
 
     <!-- ====================================================================
-         liens. liste mono minimale.
+         liens
          ==================================================================== -->
-    <section class="liens reveal" id="liens" aria-labelledby="liens-titre">
-      <div class="seq" data-seq="1000010000100001" aria-hidden="true"></div>
-      <h2 class="section-titre" id="liens-titre">liens</h2>
-      <nav aria-label="liens externes">
-        <ul class="liens-liste">
-          <li>
-            <a href="https://fantomatik.bandcamp.com/" target="_blank" rel="noopener noreferrer">bandcamp</a>
-          </li>
-          <li>
-            <!-- pas d'email public : le contact passe par le formulaire de la page bandcamp. -->
-            <a href="https://fantomatik.bandcamp.com/" target="_blank" rel="noopener noreferrer">contact</a>
-          </li>
-          <!--
-            réseaux futurs : décommentez et complétez quand ils existeront.
-          <li>
-            <a href="https://instagram.com/fantomatik" target="_blank" rel="noopener noreferrer">instagram</a>
-          </li>
-          <li>
-            <a href="https://soundcloud.com/fantomatik" target="_blank" rel="noopener noreferrer">soundcloud</a>
-          </li>
-          -->
-        </ul>
-      </nav>
+    <section class="sec liens reveal" id="liens" aria-labelledby="liens-titre">
+      <div class="wrap">
+        <h2 class="kicker" id="liens-titre">liens</h2>
+        <nav aria-label="liens externes">
+          <ul class="liens-liste">
+            <li><a href="https://fantomatik.bandcamp.com/" target="_blank" rel="noopener noreferrer">bandcamp →</a></li>
+            <!-- pas d'email public : le contact passe par le formulaire bandcamp. -->
+            <li><a href="https://fantomatik.bandcamp.com/" target="_blank" rel="noopener noreferrer">contact →</a></li>
+            <!--
+              réseaux futurs : décommentez et complétez.
+            <li><a href="https://instagram.com/fantomatik" target="_blank" rel="noopener noreferrer">instagram →</a></li>
+            -->
+          </ul>
+        </nav>
+      </div>
     </section>
+
   </main>
 
+  <div class="strip" aria-hidden="true"></div>
+
   <!-- ====================================================================
-       footer. micro-ligne technique.
+       footer
        ==================================================================== -->
-  <footer class="pied">
-    <div class="seq" data-seq="1000000010000010" aria-hidden="true"></div>
-    <p>fantomatik(tm) · tous signaux traités · lille · 2026</p>
+  <footer class="foot">
+    <div class="wrap">
+      <p>fantomatik(tm) · tous signaux traités · lille · 2026</p>
+    </div>
   </footer>
 
-  <!-- couches de texture (décoratives, non interactives) -->
-  <div class="fx fx-scanlines" aria-hidden="true"></div>
-  <div class="fx fx-grain" aria-hidden="true"></div>
-  <div class="fx fx-vignette" aria-hidden="true"></div>
-  <div class="fx fx-rollbar" aria-hidden="true"></div>
+  <div class="strip" aria-hidden="true"></div>
 
   <script src="js/main.js" defer></script>
 </body>
